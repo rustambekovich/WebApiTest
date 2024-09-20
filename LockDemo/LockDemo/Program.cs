@@ -2,67 +2,66 @@
 
 class Program
 {
+    public static long allTime { get; set; } = 0;  // Total time for all requests
     private static async Task SendPostRequestAsync(HttpClient client, string apiUrl, int requestNumber)
     {
-        var time = new Stopwatch();
+        var time = new Stopwatch();  // Stopwatch to measure time for this request
         time.Start();
         try
         {
             var formData = new MultipartFormDataContent();
 
-            formData.Add(new StringContent($"John Doe {requestNumber}"), "Name");
-            formData.Add(new StringContent($"alik@example.com"), "Email");
-            formData.Add(new StringContent("1990-01-01"), "Birthday");
+            formData.Add(new StringContent($"Assalomu alaykum {requestNumber}"), "Name");
+            formData.Add(new StringContent($"2"), "Email");
+            formData.Add(new StringContent("Assalomu alaykum"), "Birthday");
 
-            // Send the POST request
             HttpResponseMessage response = await client.PostAsync(apiUrl, formData);
 
             // Ensure successful response
             response.EnsureSuccessStatusCode();
 
             string responseData = await response.Content.ReadAsStringAsync();
-            time.Stop();
-            Console.WriteLine($"Request {requestNumber} succeeded. Response: {responseData} : {time.ElapsedMilliseconds} ms");
+            time.Stop();  
+            long elapsedMs = time.ElapsedMilliseconds;  
+            allTime += elapsedMs; 
+
+            Console.WriteLine($"Request {requestNumber} succeeded. Time taken: {elapsedMs} ms. Response: {responseData}");
         }
         catch (Exception ex)
         {
-            time.Stop();
-            Console.WriteLine($"Request {requestNumber} failed. Error: {ex.Message} : {time.ElapsedMilliseconds} ms");
+            time.Stop(); 
+            long elapsedMs = time.ElapsedMilliseconds;
+            allTime += elapsedMs;
+
+            Console.WriteLine($"Request {requestNumber} failed. Time taken: {elapsedMs} ms. Error: {ex.Message}");
         }
     }
 
     private static async Task SendConcurrentRequestsAsync(string url, int numberOfRequests)
     {
-        var time = new Stopwatch();
-        time.Start();
-
         using (HttpClient httpClient = new HttpClient())
         {
-            Task[] tasks = new Task[numberOfRequests];
+            Task[] tasks = new Task[numberOfRequests]; 
 
             for (int i = 0; i < numberOfRequests; i++)
             {
-                // Start a new request
                 tasks[i] = SendPostRequestAsync(httpClient, url, i + 1);
             }
 
-            // Wait for all requests to complete
             await Task.WhenAll(tasks);
         }
 
-        time.Stop();
-
-        await Console.Out.WriteLineAsync($"Umumiy vaqt: {time.ElapsedMilliseconds} ms\n Ortacha vaqt {time.ElapsedMilliseconds / numberOfRequests} ms");
+        Console.WriteLine($"\nTotal time for all {numberOfRequests} requests: {allTime} ms");
+        Console.WriteLine($"Average time per request: {allTime / numberOfRequests} ms");
     }
 
     static async Task Main(string[] args)
     {
-        string url = "https://localhost:7296/api/Register";  // Replace with your actual URL
-        int numberOfRequests = 10000;
+        string url = "http://45.130.148.192:6666/api/Register";  
+        int numberOfRequests = 10000; 
 
         Console.WriteLine($"Sending {numberOfRequests} requests to {url}...");
 
-        // Send all requests concurrently
         await SendConcurrentRequestsAsync(url, numberOfRequests);
 
         Console.WriteLine("All requests completed.");
