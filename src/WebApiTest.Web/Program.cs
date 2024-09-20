@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using WebApiTest.Web.DataAccess;
 
@@ -11,6 +12,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MyDbCOntext>(db => db.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddRateLimiter(x =>
+{
+    x.RejectionStatusCode = 429;
+    x.AddSlidingWindowLimiter("sliding", options =>
+    {
+        options.Window = TimeSpan.FromSeconds(3);
+        options.SegmentsPerWindow = 5;
+        options.PermitLimit = 100;
+        options.QueueLimit = 3;
+    });
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,6 +37,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseRateLimiter();
+app.MapControllers().RequireRateLimiting("sliding");
 
 app.Run();

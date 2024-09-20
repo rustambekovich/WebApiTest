@@ -12,7 +12,7 @@ class Program
             var formData = new MultipartFormDataContent();
 
             formData.Add(new StringContent($"Assalomu alaykum {requestNumber}"), "Name");
-            formData.Add(new StringContent($"2"), "Email");
+            formData.Add(new StringContent($"yozildi"), "Email");
             formData.Add(new StringContent("Assalomu alaykum"), "Birthday");
 
             HttpResponseMessage response = await client.PostAsync(apiUrl, formData);
@@ -25,7 +25,7 @@ class Program
             long elapsedMs = time.ElapsedMilliseconds;  
             allTime += elapsedMs; 
 
-            Console.WriteLine($"Request {requestNumber} succeeded. Time taken: {elapsedMs} ms. Response: {responseData}");
+            Console.WriteLine($"Request {requestNumber} succeeded. Response: {responseData}  Time taken: {elapsedMs} ms.");
         }
         catch (Exception ex)
         {
@@ -33,7 +33,7 @@ class Program
             long elapsedMs = time.ElapsedMilliseconds;
             allTime += elapsedMs;
 
-            Console.WriteLine($"Request {requestNumber} failed. Time taken: {elapsedMs} ms. Error: {ex.Message}");
+            Console.WriteLine($"Request {requestNumber} failed. Error: {ex.Message}  Time taken: {elapsedMs} ms.");
         }
     }
 
