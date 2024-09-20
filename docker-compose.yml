@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.4'
 
 services:
 
@@ -10,9 +10,10 @@ services:
     image: web-api-test-backend-image:latest
     restart: always
     environment:
-      - ASPNETCORE_ENVIRONMENT=ENVIRONMENT
+      - ASPNETCORE_ENVIRONMENT=Development
 
     ports:
       - 6666:8080
+      - 3434:443
 
   
