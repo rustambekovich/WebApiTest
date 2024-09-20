@@ -12,7 +12,7 @@ public class RegisterController : ControllerBase
 {
     private readonly MyDbCOntext _dbContext;
     private readonly DbSet<User> _dbSet;
-    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1000, 1000);
+    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
 
     public RegisterController(MyDbCOntext dbContext)
